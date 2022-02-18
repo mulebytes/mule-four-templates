@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="pingLogicFlow" doc:id="78215420-8bf7-4b79-871a-d2d163b64972" >
+		<logger level="INFO" doc:name="Logger" doc:id="08b44965-3759-4a45-afb3-5a901780cc65" message='"Entered into System Logic Flow"'/>
+		<try doc:name="Try" doc:id="a91fb353-078c-4c9e-a18c-22ae7af38b57" >
+			<until-successful maxRetries="5" doc:name="Until Successful" doc:id="76b04f4d-9694-4238-a231-1108f8dd8b65" >
+				<http:request method="GET" doc:name="Call Backend Service" doc:id="883d9a9d-110b-470c-901c-122586cf696c" url="https://run.mocky.io/v3/9a3a2ebf-b73d-4acc-a9a3-9558a61f755a" />
+			</until-successful>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="432b57d1-9b55-44db-a42c-3f27995a2697" type="DB:BAD_SQL_SYNTAX, DB:QUERY_EXECUTION, DB:RETRY_EXHAUSTED, HTTP:BAD_GATEWAY, HTTP:BAD_REQUEST, HTTP:METHOD_NOT_ALLOWED, HTTP:PARSING">
+					<ee:transform doc:name="Transform Message" doc:id="94cbc23b-deab-4088-9d47-48e3c09803a5" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Message": "Continue Case"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-continue>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7fdcfbcf-7d86-410b-b2a2-2acf240ed9f3" type="DB:CONNECTIVITY, DB:RETRY_EXHAUSTED, HTTP:CONNECTIVITY, HTTP:SERVICE_UNAVAILABLE, HTTP:TIMEOUT, STREAM_MAXIMUM_SIZE_EXCEEDED">
+					<ee:transform doc:name="Transform Message" doc:id="1f844e1d-95dd-4455-bb99-27085e6fc907" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Message": "Retry Case Propagate Error"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="Backend Service Resp" doc:id="3b8e11a6-f35f-459a-9103-33aa9f3cdc3e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.data map ((item, index) -> {
+    ItemId: item.ItemId,
+    Title:item.Title,
+    Price:item.Price,
+    IsVeg:item.IsVeg,
+    ImageURL:item.ImageUrl,
+    Description:item.Description
+})]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:insert doc:name="Insert into DB" doc:id="dc4e1584-6b87-426e-b1dd-5ff030e7ec30" config-ref="Database_Config">
+					<db:sql><![CDATA[insert into keerthidb.employee(EmpID,EmpName,EmpDept,EmpAge) values (:EmpId,:EmpName,:EmpDept,:EmpAge);]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{'EmpId':(payload.ItemId + 1),'EmpName':(payload.Description),'EmpDept':(payload.Title),'EmpAge':(payload.Price)}]]]></db:input-parameters>
+				</db:insert>
+		<ee:transform doc:name="SYS API Response" doc:id="85f958e3-5d7c-4b26-98a8-37c1d8f1ff39" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
