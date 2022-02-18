@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="logicFlow" doc:id="f782bf74-f8ba-480f-82c3-82d5d479bab7" >
+		<logger level="INFO" doc:name="Logger" doc:id="6185423b-0b0c-4449-ae20-57f12eb1328b" message='"Entered into Experience Logic Flow"'/>
+		<set-variable value="${env}" doc:name="Set environment" doc:id="72127202-6b54-4a0e-9151-aebf582db14f" variableName="environment"/>
+		<ee:transform doc:name="set Response" doc:id="fc4faaa3-897b-498e-8b77-1f38c0aa9370" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status":"OK",
+	"environment": p ('env'),
+	"TimeStamp":now(),
+	"DBHOST": p ('secure::db.host'),
+	"DBUser": p ('secure::db.user'),
+	"DBPassword": p ('secure::db.password')
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="GET" doc:name="Call PRC API" doc:id="49029410-fd93-494a-8491-c6c4d82a8217" config-ref="HTTP_Request_configuration" path="/ping"/>
+		<ee:transform doc:name="EXP Resp To Client" doc:id="2e1df498-fb05-4e81-a63f-cf289cfec5eb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

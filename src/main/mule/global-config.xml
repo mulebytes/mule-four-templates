@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+	<http:listener-config name="exp-template-api-httpListenerConfig">
+        <http:listener-connection host="localhost" port="8086"/>
+    </http:listener-config>
+    <apikit:config name="exp-template-api-config" api="resource::e220a2a3-dbe1-48b8-b948-0f918765ce7d:exp-template-api:1.0.0:raml:zip:exp-template-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<global-property doc:name="Global Property" doc:id="72d77908-4ce2-4325-b93b-729dd16c9734" name="env" value="local" />
+	<configuration-properties doc:name="Configuration properties" doc:id="b7c13ae3-2d4e-4888-bb79-d09039310e0c" file="properties\myapp.${env}.properties" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="d605f428-8749-4244-bd83-5b381c51a086" file="properties\myapp.${env}.properties" key="mulebytesencryptionkey" />
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="f6feaf0f-c43c-438c-aa71-068e872887ee" basePath="/prc-template-api" >
+		<http:request-connection host="localhost" port="8082"/>
+	</http:request-config>
+	<tls:context name="TLS_Context" doc:name="TLS Context" doc:id="e73f0669-368e-4479-9261-6686603e0596" >
+		<tls:trust-store insecure="true" />
+		<tls:key-store type="jks" path="localhost.jks" keyPassword="root" password="root" />
+	</tls:context>
+</mule>
