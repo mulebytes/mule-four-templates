@@ -1,1 +1,0 @@
-# mule-four-templates

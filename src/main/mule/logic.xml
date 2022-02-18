@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="pingLogicFlow" doc:id="845b4032-6d31-4671-bd43-3f7a681485ee" >
+		<logger level="INFO" doc:name="Logger" doc:id="ed4ef8b8-f147-421d-8db2-ad377e9ae617" message='"Entered into Process Logic Flow"'/>
+		<http:request method="GET" doc:name="Call SYS API" doc:id="217b74d5-6a90-486b-af8a-6da5eea06541" config-ref="HTTP_Request_configuration" path="/ping"/>
+		<ee:transform doc:name="PRC Api Resp to EXP Api" doc:id="6237d46b-0e60-4ce3-bdeb-b33252ce6736">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
