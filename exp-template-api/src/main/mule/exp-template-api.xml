@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd ">
+    <flow name="exp-template-api-main">
+        <http:listener config-ref="HTTP_Listener_config" path="/exp-template-api/*" doc:description="This listner responds payload.&#10;&#10;This listner responds error response from the vars.errorresp">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[vars.errorRes]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="Router" />
+    </flow>
+    <flow name="exp-template-api-console">
+        <http:listener config-ref="HTTP_Listener_config" path="/exp-template-console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="Router" />
+    </flow>
+    <flow name="get:\exp-menu:exp-template-api-config">
+		<flow-ref doc:name="Flow Reference" doc:id="c5ce7d49-1d5d-414f-a335-67b12ad79334" name="get-exp-menulist-logicFlow"/>
+    </flow>
+    <flow name="post:\exp-menu:application\json:exp-template-api-config">
+		<flow-ref doc:name="Flow Reference" doc:id="5126aed5-eabe-4473-b078-9f392de570a5" name="post-exp-menulist-logicFlow"/>
+    </flow>
+</mule>

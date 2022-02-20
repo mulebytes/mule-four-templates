@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="get-exp-menulist-logicFlow" doc:id="127cabb9-38db-4a5c-919c-ace6a39299c3" >
+		<set-payload value='"Hi this is surya"' doc:name="Set Payload" doc:id="e4ffa9a9-2142-4eda-b2ad-0e388f1ba2cf" />
+		<ee:transform doc:name="Transform Message" doc:id="f2c711f7-a218-4193-be21-5f0047e46d59" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "success",
+  env : p ('env'),
+  dbhost: p ('db.host'),
+  dbuser: p ('db.user'),
+  dbpassword: p ('secure::db.password')
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="post-exp-menulist-logicFlow" doc:id="70477dde-05d0-4148-a578-9ca8ab15a3b4" >
+		<ee:transform doc:name="Transform Message" doc:id="b303effe-9ef0-457e-9e70-3d8cdd2b6e19" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "Resource Created"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

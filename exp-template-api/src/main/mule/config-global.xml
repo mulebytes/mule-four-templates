@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<apikit:config outboundHeadersMapName="outboundHeadersMapName" httpStatusVarName="httpStatus" doc:name="Router" doc:id="78cb6a82-6070-463f-b34d-b9c383e495ef" name="Router" api="resource::e3a6d836-43b9-49f5-8c12-c8e2c4c61e87:exp-template-api:1.0.0:raml:zip:exp-template-api.raml" disableValidations="true">
+		<apikit:flow-mappings >
+			<apikit:flow-mapping resource="/exp-menu" action="get" flow-ref="get:\exp-menu:exp-template-api-config" />
+			<apikit:flow-mapping resource="/exp-menu" action="post" content-type="application/json" flow-ref="post:\exp-menu:application\json:exp-template-api-config" />
+		</apikit:flow-mappings>
+	</apikit:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="38c8f918-32b5-43ea-ba95-c776738b500d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<configuration doc:name="Configuration" doc:id="6d3217ab-41ee-46a0-ba3e-37ec06a38e10" defaultErrorHandler-ref="errorsError_Handler" />
+	<global-property doc:name="Global Property" doc:id="5c544956-0007-497d-b24b-46d1634e1590" name="env" value="dev" />
+	<configuration-properties doc:name="Configuration properties" doc:id="902416de-935e-43bb-b06b-738a80f397c7" file="myapp.${env}.properties" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="9a9a6d45-7871-4567-891a-b0d86d334812" file="myapp.${env}.properties" key="surya@1998" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	
+</mule>
